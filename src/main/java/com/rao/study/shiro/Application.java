@@ -29,12 +29,26 @@ public class Application {
 
         if(!currentUser.isAuthenticated()){
             //创建一个token
-            UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken("root","secret");
+            UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken("lonestarr","vespa");
             usernamePasswordToken.setRememberMe(true);
             //当前用户以token登录
             try{
                 currentUser.login(usernamePasswordToken);
-                log.info("登陆成功"+currentUser.isAuthenticated());
+                //getPrincipal()获取当前用户名
+                log.info(currentUser.getPrincipal()+"登陆成功"+currentUser.isAuthenticated());
+                //查看当前用户是否包含某角色
+                if(currentUser.hasRole("admin")){
+                    log.info("属于admin角色");
+                }else{
+                    log.info("不属于admin角色");
+                }
+                //查看是否有某权限
+                if(currentUser.isPermitted("lightsaber:drive:eagle5")){
+                    log.info("有lightsaber权限");
+                }
+
+                //退出
+                currentUser.logout();
             }catch ( UnknownAccountException uae ) {
                 log.info("账户不存在");
             } catch ( IncorrectCredentialsException ice ) {
@@ -43,7 +57,7 @@ public class Application {
                 //account for that username is locked - can't login.  Show them a message?
             }catch ( AuthenticationException ae ) {
             //unexpected condition - error?
-        }
+            }
 
         }
 
