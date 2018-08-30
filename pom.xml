@@ -23,12 +23,20 @@
             <artifactId>shiro-core</artifactId>
             <version>1.1.0</version>
         </dependency>
-        <!-- Shiro uses SLF4J for logging.  We'll use the 'simple' binding
-             in this example app.  See http://www.slf4j.org for more info. -->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.6.1</version>
+            <artifactId>slf4j-log4j12</artifactId>
+           <version>1.7.21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>1.7.21</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
     </dependencies>
 
