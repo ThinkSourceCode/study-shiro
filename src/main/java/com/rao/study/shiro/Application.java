@@ -15,7 +15,7 @@ public class Application {
     private static final transient Logger log = LoggerFactory.getLogger(Application.class);
     public static void main(String[] args){
         log.info("My First Apache Shiro Application");
-        Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");
+        Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");//这里采用的是IniRealm,系统自带的Realm
         //获取安全管理器,整个shiro的核心
         SecurityManager securityManager = factory.getInstance();
 
@@ -24,43 +24,18 @@ public class Application {
 
         Subject currentUser = SecurityUtils.getSubject();
 
-        Session session = currentUser.getSession();
-        session.setAttribute("name","raoshihong");
+        //仅仅进行身份认证,不进行授权,所以配置文件中只配置了用户名和密码
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken("lonestarr","vespa");
 
-        if(!currentUser.isAuthenticated()){
-            //创建一个token
-            UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken("lonestarr","vespa");
-            usernamePasswordToken.setRememberMe(true);
-            //当前用户以token登录
-            try{
-                currentUser.login(usernamePasswordToken);
-                //getPrincipal()获取当前用户名
-                log.info(currentUser.getPrincipal()+"登陆成功"+currentUser.isAuthenticated());
-                //查看当前用户是否包含某角色
-                if(currentUser.hasRole("admin")){
-                    log.info("属于admin角色");
-                }else{
-                    log.info("不属于admin角色");
-                }
-                //查看是否有某权限
-                if(currentUser.isPermitted("lightsaber:drive:eagle5")){
-                    log.info("有lightsaber权限");
-                }
-
-                //退出
-                currentUser.logout();
-            }catch ( UnknownAccountException uae ) {
-                log.info("账户不存在");
-            } catch ( IncorrectCredentialsException ice ) {
-                //password didn't match, try again?
-            } catch ( LockedAccountException lae ) {
-                //account for that username is locked - can't login.  Show them a message?
-            }catch ( AuthenticationException ae ) {
-            //unexpected condition - error?
-            }
-
+        try {
+            currentUser.login(usernamePasswordToken);//当这里调用时,会使用系统的Realm对token进行验证,在ModularRealmAuthenticator类中的org.apache.shiro.realm.Realm.getAuthenticationInfo这个方法进行验证
+        }catch (AuthenticationException e){
+            log.info("身份验证失败");
         }
-
+        if(currentUser.isAuthenticated()){
+            log.info("已经登录");
+        }
+        currentUser.logout();
         System.exit(0);
     }
 }
