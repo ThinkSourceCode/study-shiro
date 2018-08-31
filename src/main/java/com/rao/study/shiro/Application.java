@@ -25,7 +25,7 @@ public class Application {
         Subject currentUser = SecurityUtils.getSubject();
 
         //仅仅进行身份认证,不进行授权,所以配置文件中只配置了用户名和密码
-        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken("darkhelmet","ludicrousspeed");
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken("darkhelmet","ludicrousspeed1");
 
         try {
             currentUser.login(usernamePasswordToken);//当这里调用时,会使用系统的Realm对token进行验证,在ModularRealmAuthenticator类中的org.apache.shiro.realm.Realm.getAuthenticationInfo这个方法进行验证
