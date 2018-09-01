@@ -3,6 +3,8 @@ package com.rao.study.shiro;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.Session;
@@ -40,6 +42,23 @@ public class Application {
         }else{
             log.info("不属于超级管理员");
         }
+
+        //判断用户是否拥有某个权限
+        if (currentUser.isPermitted("user:delete")){
+            log.info("拥有user:delete权限");
+        }else{
+            log.info("没有user:delete权限");
+        }
+
+        //或者使用check的方式
+        try{
+            currentUser.checkPermission("user:delete");//有某个权限不抛出异常,没有则抛出异常
+            log.info("拥有user:delete权限");
+        }catch (AuthorizationException e){
+            log.info("没有user:delete权限");
+        }
+
+        //在spring下,可以使用@RequirePermission注解,在jsp中可以使用相应的shiro标签
 
         System.exit(0);
     }
