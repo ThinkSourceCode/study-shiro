@@ -15,6 +15,8 @@ public class Application {
     private static final transient Logger log = LoggerFactory.getLogger(Application.class);
     public static void main(String[] args){
         log.info("My First Apache Shiro Application");
+
+        //这里使用IniRealm读取ini文件,如果读取到[users]则会将其作为数据源保存到缓存中,当登陆时就将当前登录的用户信息和缓存中的信息进行匹配
         Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");//这里采用的是IniRealm,系统自带的Realm
         //获取安全管理器,整个shiro的核心
         SecurityManager securityManager = factory.getInstance();
@@ -24,18 +26,22 @@ public class Application {
 
         Subject currentUser = SecurityUtils.getSubject();
 
-        //仅仅进行身份认证,不进行授权,所以配置文件中只配置了用户名和密码
-        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken("darkhelmet","ludicrousspeed");
+        UsernamePasswordToken token = new UsernamePasswordToken("zhang","123");
 
         try {
-            currentUser.login(usernamePasswordToken);//当这里调用时,会使用系统的Realm对token进行验证,在ModularRealmAuthenticator类中的org.apache.shiro.realm.Realm.getAuthenticationInfo这个方法进行验证
+            currentUser.login(token); //因为没有自定义realm，所以会使用系统的AuthorizingRealm进行登陆验证
+            log.info("登陆成功");
         }catch (AuthenticationException e){
-            log.info("身份验证失败");
+            log.info("登陆失败");
         }
-        if(currentUser.isAuthenticated()){
-            log.info("已经登录");
+        //判断是否有某角色
+        if(currentUser.hasRole("superAdmin")){//使用系统的AuthorizingRealm进行授权验证
+            log.info("属于超级管理员");
+        }else{
+            log.info("不属于超级管理员");
         }
-        currentUser.logout();
+
         System.exit(0);
     }
+
 }
