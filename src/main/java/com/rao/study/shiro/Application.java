@@ -1,6 +1,7 @@
 package com.rao.study.shiro;
 
 
+import com.rao.study.shiro.config.MyConfig;
 import com.rao.study.shiro.realm.MyRealm;
 import com.rao.study.shiro.sql.SqlOperation;
 import org.apache.shiro.SecurityUtils;
@@ -15,6 +16,8 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,15 +28,8 @@ public class Application {
     public static void main(String[] args){
         log.info("My First Apache Shiro Application");
 
-        MyRealm myRealm = new MyRealm();
-
-        Factory<SecurityManager> factory = new IniSecurityManagerFactory();
-        //获取安全管理器,整个shiro的核心
-        DefaultSecurityManager securityManager = (DefaultSecurityManager) factory.getInstance();
-        securityManager.setRealm(myRealm);//设置自定义的Realm
-
-        //将安全管理器保持到一个全局变量中,供整个项目的使用
-        SecurityUtils.setSecurityManager(securityManager);
+        //通过spring容器来实例化SecurityManager,如果与web项目整合,则使用web.xml容器来实例化SecurityManager
+        ApplicationContext ctxt =  new AnnotationConfigApplicationContext(MyConfig.class);
 
         Subject currentUser = SecurityUtils.getSubject();
 
