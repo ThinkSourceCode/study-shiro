@@ -28,7 +28,7 @@ public class MyRealm extends AuthorizingRealm {
         user_roles.put("wang",Arrays.asList("admin"));
 
         //角色及权限
-        role_permissions.put("admin",Arrays.asList("user:creat","user:update"));
+        role_permissions.put("admin",Arrays.asList("user:creat","user:update","+user+10"));
         role_permissions.put("superAdmin",Arrays.asList("user:creat","user:update","user:delete"));
     }
 
