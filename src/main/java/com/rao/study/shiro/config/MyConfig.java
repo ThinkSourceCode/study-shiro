@@ -27,6 +27,8 @@ public class MyConfig {
         return securityManager;
     }
 
+
+
     @Bean("myRealm")
     public Realm realm(){
         MyRealm myRealm = new MyRealm();
