@@ -2,8 +2,7 @@ package com.rao.study.shiro;
 
 
 import com.rao.study.shiro.realm.MyRealm;
-import com.rao.study.shiro.resolver.BitAndWildPermissionResolver;
-import com.rao.study.shiro.resolver.MyRolePermissionResolver;
+import com.rao.study.shiro.sql.SqlOperation;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -17,8 +16,12 @@ import org.apache.shiro.util.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 public class Application {
     private static final transient Logger log = LoggerFactory.getLogger(Application.class);
+
     public static void main(String[] args){
         log.info("My First Apache Shiro Application");
 
@@ -28,11 +31,6 @@ public class Application {
         //获取安全管理器,整个shiro的核心
         DefaultSecurityManager securityManager = (DefaultSecurityManager) factory.getInstance();
         securityManager.setRealm(myRealm);//设置自定义的Realm
-
-        //自定义角色规则器和权限解析规则器
-        ModularRealmAuthorizer authorizer = (ModularRealmAuthorizer) securityManager.getAuthorizer();
-        authorizer.setRolePermissionResolver(new MyRolePermissionResolver());//角色规则解析器
-        authorizer.setPermissionResolver(new BitAndWildPermissionResolver());//权限规则解析器
 
         //将安全管理器保持到一个全局变量中,供整个项目的使用
         SecurityUtils.setSecurityManager(securityManager);
@@ -67,13 +65,6 @@ public class Application {
             log.info("拥有user:delete权限");
         }catch (AuthorizationException e){
             log.info("没有user:delete权限");
-        }
-
-        try{
-            currentUser.checkPermission("+user+10");//有某个权限不抛出异常,没有则抛出异常
-            log.info("拥有+user+10权限");
-        }catch (AuthorizationException e){
-            log.info("没有+user+10权限");
         }
 
         //在spring下,可以使用@RequirePermission注解,在jsp中可以使用相应的shiro标签
