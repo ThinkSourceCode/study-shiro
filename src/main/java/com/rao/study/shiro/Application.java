@@ -1,13 +1,14 @@
 package com.rao.study.shiro;
 
 
+import com.rao.study.shiro.realm.MyRealm;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.Factory;
 import org.slf4j.Logger;
@@ -18,10 +19,12 @@ public class Application {
     public static void main(String[] args){
         log.info("My First Apache Shiro Application");
 
-        //这里使用IniRealm读取ini文件,如果读取到[users]则会将其作为数据源保存到缓存中,当登陆时就将当前登录的用户信息和缓存中的信息进行匹配
-        Factory<SecurityManager> factory = new IniSecurityManagerFactory("classpath:shiro.ini");//这里采用的是IniRealm,系统自带的Realm
+        MyRealm myRealm = new MyRealm();
+
+        Factory<SecurityManager> factory = new IniSecurityManagerFactory();
         //获取安全管理器,整个shiro的核心
-        SecurityManager securityManager = factory.getInstance();
+        DefaultSecurityManager securityManager = (DefaultSecurityManager) factory.getInstance();
+        securityManager.setRealm(myRealm);//设置自定义的Realm
 
         //将安全管理器保持到一个全局变量中,供整个项目的使用
         SecurityUtils.setSecurityManager(securityManager);
