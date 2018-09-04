@@ -1,25 +1,30 @@
 package com.rao.study.shiro.config;
 
 
-import com.rao.study.shiro.realm.MyRealm;
+import com.rao.study.shiro.filter.MyAuthorizationFilter;
+import com.rao.study.shiro.filter.MyOncePerRequestFilter;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.realm.Realm;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.util.Factory;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.mgt.WebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.servlet.Filter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class MyConfig {
 
     @Bean
-    public DefaultSecurityManager defaultSecurityManager(Realm myRealm){
-        Factory<SecurityManager> factory = new IniSecurityManagerFactory();
-        //获取安全管理器,整个shiro的核心
-        DefaultSecurityManager securityManager = (DefaultSecurityManager) factory.getInstance();
-        securityManager.setRealm(myRealm);//设置自定义的Realm
+    public SecurityManager defaultSecurityManager(){
+        //获取安全管理器,整个shiro的核心,web应用则使用WebSecurityManager
+        WebSecurityManager securityManager = new DefaultWebSecurityManager();
 
         //将安全管理器保持到一个全局变量中,供整个项目的使用
         SecurityUtils.setSecurityManager(securityManager);
@@ -27,11 +32,40 @@ public class MyConfig {
         return securityManager;
     }
 
+    //通过ShiroFilterFactoryBean来管理shiro的过滤
+    @Bean
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager){
+        ShiroFilterFactoryBean filterFactoryBean = new ShiroFilterFactoryBean();
+        filterFactoryBean.setSecurityManager(securityManager);
 
+        //shiro的过滤器是采用的Servlet的filter进行代理过滤,所以是对url资源进行过滤的,所以使用过滤器,则需要指定这个过滤器对那些url资源进行过滤
 
-    @Bean("myRealm")
-    public Realm realm(){
-        MyRealm myRealm = new MyRealm();
-        return myRealm;
+        //1.先添加自定义的过滤器
+        Map<String, Filter> filterMap = new HashMap<>();
+        filterMap.put("authFilter",new MyAuthorizationFilter());//每个过滤器都有一个名称,这样可以重复使用这个名称,通过名称key查找过滤实例
+        filterMap.put("onceFilter",new MyOncePerRequestFilter());
+
+        filterFactoryBean.setFilters(filterMap);
+
+        //2.设置指定的url资源用相应的过滤器
+        Map<String,String> filterChainDefinitionMap = new HashMap<>();
+        filterChainDefinitionMap.put("/webjars/**", "anon");//anon表示匿名,shiro自带的过滤器
+        filterChainDefinitionMap.put("/druid/**", "anon");
+        filterChainDefinitionMap.put("/app/**", "anon");
+        filterChainDefinitionMap.put("/sys/login", "anon");
+        filterChainDefinitionMap.put("/swagger/**", "anon");
+        filterChainDefinitionMap.put("/v2/api-docs", "anon");
+        filterChainDefinitionMap.put("/swagger-ui.html", "anon");
+        filterChainDefinitionMap.put("/swagger-resources/**", "anon");
+        filterChainDefinitionMap.put("/captcha.jpg", "anon");
+
+        //使用自定义的过滤器
+        filterChainDefinitionMap.put("/**","authFilter");//表示对所有的资源都使用authFilter过滤器进行过滤
+        filterChainDefinitionMap.put("/register","onceFilter");
+
+        filterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+
+        return filterFactoryBean;
     }
+
 }
