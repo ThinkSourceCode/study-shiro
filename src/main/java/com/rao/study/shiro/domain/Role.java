@@ -1,4 +1,4 @@
-package com.rao.study.shiro.sql;
+package com.rao.study.shiro.domain;
 
 public class Role {
     private int id;

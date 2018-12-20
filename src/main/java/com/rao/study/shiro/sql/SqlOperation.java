@@ -1,5 +1,8 @@
 package com.rao.study.shiro.sql;
 
+import com.rao.study.shiro.domain.Permission;
+import com.rao.study.shiro.domain.Role;
+import com.rao.study.shiro.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +30,7 @@ public class SqlOperation {
         }
     }
 
-    public  static User login(String username,String password){
+    public  static User login(String username, String password){
 
         User user = null;
         try {
@@ -37,6 +40,7 @@ public class SqlOperation {
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()){
                 user = new User();
+                user.setId(rs.getInt(1));
                 user.setUsername(rs.getString(2));
                 user.setPassword(rs.getString(3));
             }
@@ -46,11 +50,11 @@ public class SqlOperation {
         return user;
     }
 
-    public static List<Role> getRoles(String username){
+    public static List<Role> getRoles(Integer userId){
         List<Role> roles = new ArrayList<Role>();
         try {
-            PreparedStatement pstmt = connection.prepareStatement("select r.id,rolename from t_role r left join t_user_role ur on r.id = ur.role_id left join t_user u on ur.user_id = u.id where username = ?");
-            pstmt.setString(1,username);
+            PreparedStatement pstmt = connection.prepareStatement("select r.id,rolename from t_role r left join t_user_role ur on r.id = ur.role_id left join t_user u on ur.user_id = u.id where u.id = ?");
+            pstmt.setInt(1,userId);
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()){
                 Role role = new Role();

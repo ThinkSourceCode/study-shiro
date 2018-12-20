@@ -1,5 +1,7 @@
 package com.rao.study.shiro.realm;
 
+import com.rao.study.shiro.domain.Role;
+import com.rao.study.shiro.domain.User;
 import com.rao.study.shiro.sql.*;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -14,16 +16,19 @@ import java.util.stream.Collectors;
 public class MyRealm extends AuthorizingRealm {
 
     //权限验证  (当调用了进行权限验证的方法时,才会调用这个方法,通过这个方法返回对应用户的角色和权限)
+    //比如check方法或者requirepermission或者requirerole权限注解的时候会调用到,用来获取用户拥有的权限和角色
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 
-        String username = (String) principalCollection.getPrimaryPrincipal();
+//        String username = (String) principalCollection.getPrimaryPrincipal();
+
+        User user = (User) principalCollection.getPrimaryPrincipal();
 
         //权限验证,是将对应的用户的权限及角色查询出来,再构造成一个AuthorizationInfo对象返回
 
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 
         //先取出用户对应的角色
-        List<Role> roleList = SqlOperation.getRoles(username);
+        List<Role> roleList = SqlOperation.getRoles(user.getId());
         List<String> roles = roleList.stream().map(Role::getRolename).collect(Collectors.toList());
 
         //在根据角色取出对应的所有权限
@@ -48,13 +53,19 @@ public class MyRealm extends AuthorizingRealm {
         String password = new String((char[])authenticationToken.getCredentials());
 
         //根据用户名和密码查询
-        if(SqlOperation.login(username,password)!=null){
-            return new SimpleAuthenticationInfo(username,password,getName());//成功,则返回一个AuthenticationInfo对象,表示登陆验证成功
+        User user = SqlOperation.login(username,password);
+        if(user!=null){
+
+            //这块存储的数据,在doGetAuthorizationInfo方法中用得到
+            //比如这里的第一个参数,在doGetAuthorizationInfo的参数就可以获取,这里存储username,那么获取的就是username,如：String username = (String) principalCollection.getPrimaryPrincipal();
+            //如果这里存储的是user,那么获取的就是一个user对象,User user = (User) principalCollection.getPrimaryPrincipal();
+            return new SimpleAuthenticationInfo(user,password,getName());//成功,则返回一个AuthenticationInfo对象,表示登陆验证成功
         }else{
             throw new AuthenticationException("登陆失败");
         }
     }
 
+    //表示只使用AuthenticationUserToken的校验才进行身份验证校验
     @Override
     public boolean supports(AuthenticationToken token) {
         return token instanceof UsernamePasswordToken;
