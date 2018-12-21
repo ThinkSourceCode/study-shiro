@@ -6,6 +6,7 @@ public class User {
     private String password;
     private String salt;
     private boolean locked;
+    private String token;
 
     public Integer getId() {
         return id;
@@ -44,5 +45,13 @@ public class User {
 
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

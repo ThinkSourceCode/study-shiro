@@ -19,8 +19,6 @@ public class MyRealm extends AuthorizingRealm {
     //比如check方法或者requirepermission或者requirerole权限注解的时候会调用到,用来获取用户拥有的权限和角色
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 
-//        String username = (String) principalCollection.getPrimaryPrincipal();
-
         User user = (User) principalCollection.getPrimaryPrincipal();
 
         //权限验证,是将对应的用户的权限及角色查询出来,再构造成一个AuthorizationInfo对象返回
@@ -48,18 +46,17 @@ public class MyRealm extends AuthorizingRealm {
 
     //登陆验证 (调用了login方法时才调用这个方法)
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        //这里的用户名和密码是在subject.login(token)时传递过来的
-        String username = (String) authenticationToken.getPrincipal();
-        String password = new String((char[])authenticationToken.getCredentials());
+        //因为使用的是AuthenticationUserToken校验授权,所以这里只能获取token的值了
+        String token = (String) authenticationToken.getPrincipal();
 
         //根据用户名和密码查询
-        User user = SqlOperation.login(username,password);
+        User user = SqlOperation.loginByToken(token);
         if(user!=null){
 
             //这块存储的数据,在doGetAuthorizationInfo方法中用得到
             //比如这里的第一个参数,在doGetAuthorizationInfo的参数就可以获取,这里存储username,那么获取的就是username,如：String username = (String) principalCollection.getPrimaryPrincipal();
             //如果这里存储的是user,那么获取的就是一个user对象,User user = (User) principalCollection.getPrimaryPrincipal();
-            return new SimpleAuthenticationInfo(user,password,getName());//成功,则返回一个AuthenticationInfo对象,表示登陆验证成功
+            return new SimpleAuthenticationInfo(user,token,getName());//成功,则返回一个AuthenticationInfo对象,表示登陆验证成功
         }else{
             throw new AuthenticationException("登陆失败");
         }
@@ -68,6 +65,6 @@ public class MyRealm extends AuthorizingRealm {
     //表示只使用AuthenticationUserToken的校验才进行身份验证校验
     @Override
     public boolean supports(AuthenticationToken token) {
-        return token instanceof UsernamePasswordToken;
+        return token instanceof AuthenticationUserToken;
     }
 }

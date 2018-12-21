@@ -30,7 +30,11 @@ public class Application {
         SpringApplication.run(Application.class,args);
 
 
-//        log.info("My First Apache Shiro Application");
+
+    }
+
+    public static void test(){
+        //        log.info("My First Apache Shiro Application");
 //
 //        MyRealm myRealm = new MyRealm();
 //
