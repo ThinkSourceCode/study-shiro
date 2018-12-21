@@ -5,6 +5,7 @@ import java.util.List;
 public class UserInfo {
     private String username;
     private String password;
+    private String token;
     private List<Role> roles;
 
     public String getUsername() {
@@ -29,5 +30,13 @@ public class UserInfo {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
