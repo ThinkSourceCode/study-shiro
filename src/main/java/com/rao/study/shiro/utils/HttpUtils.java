@@ -1,5 +1,7 @@
 package com.rao.study.shiro.utils;
 
+import com.rao.study.shiro.domain.UserToken;
+import com.rao.study.shiro.sql.SqlOperation;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,6 +21,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +41,26 @@ public class HttpUtils {
         }
         return token;
     }
+
+    public static boolean isValidateToken(HttpServletRequest httpServletRequest){
+        String token = getTokenFromRequest(httpServletRequest);
+        if(StringUtils.isEmpty(token)){
+            return false;
+        }else{
+            UserToken userToken = SqlOperation.getUserTokenByToken(token);
+            if(userToken!=null){
+                LocalDateTime expiredDate = userToken.getExpiredDate();
+                if(LocalDateTime.now().isAfter(expiredDate)){//token已过期
+                    return false;
+                }else{
+                    return true;
+                }
+            }else{
+                return false;
+            }
+        }
+    }
+
 
     public static String doPost(String url, Map<String,String> paramsMap) throws Exception {
         return doPost(url,paramsMap==null?new HashMap<>():paramsMap,new HashMap<>());

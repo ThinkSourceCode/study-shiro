@@ -20,7 +20,6 @@ public class TestController {
     @RequiresPermissions("user:create") //同一个会话中能成功进行权限判断,如果是多个浏览器的话,会判断当前session,所以会导致拿到同一个token,在自定义的filter中返回true了,却仍然无法访问,此时就可以在被拒绝的地方做手脚
     @GetMapping("/test2")
     public String test2(){
-        Session session = SecurityUtils.getSubject().getSession();
         return "test2";
     }
 

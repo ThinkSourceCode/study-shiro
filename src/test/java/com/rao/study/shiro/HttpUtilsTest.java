@@ -22,7 +22,7 @@ public class HttpUtilsTest {
     @Test
     public void test() throws Exception{
         Map<String,String> headsMap = new HashMap<>();
-        headsMap.put("x-user-token","e66b27d0c889344cc300c017f5890d86");
+        headsMap.put("x-user-token","73a61ef194c8ac70480bdd32e0630c83");
         String msg = HttpUtils.doGet("http://localhost:8085/myshiro/api/test2",new HashMap<>(),headsMap);
         System.out.println(msg);
     }

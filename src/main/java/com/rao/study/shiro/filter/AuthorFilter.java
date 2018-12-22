@@ -43,22 +43,7 @@ public class AuthorFilter extends AuthenticatingFilter{ //extends AuthorizationF
             if(NoNeedAuthUtils.hasNoAuthentication(httpServletRequest)){//如果有不需要权限验证的,则直接通过
                 return true;
             }else{ //否则需要进行权限验证,通过token进行验证
-                String token = HttpUtils.getTokenFromRequest(httpServletRequest);
-                if(StringUtils.isEmpty(token)){
-                    return false;
-                }else{
-                    UserToken userToken = SqlOperation.getUserTokenByToken(token);
-                    if(userToken!=null){
-                        LocalDateTime expiredDate = userToken.getExpiredDate();
-                        if(LocalDateTime.now().isAfter(expiredDate)){//token已过期
-                            return false;
-                        }else{
-                            return true;
-                        }
-                    }else{
-                        return false;
-                    }
-                }
+                return HttpUtils.isValidateToken(httpServletRequest);
             }
         }
     }
