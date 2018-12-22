@@ -22,10 +22,9 @@ public class HttpUtilsTest {
     @Test
     public void test() throws Exception{
         Map<String,String> headsMap = new HashMap<>();
-        headsMap.put("x-user-token","73a61ef194c8ac70480bdd32e0630c83");
-        String msg = HttpUtils.doGet("http://localhost:8085/myshiro/api/test2",new HashMap<>(),headsMap);
+        headsMap.put("x-user-token","bf5c11addab32b47374d1bd5e0dbe5e0");
+        String msg = HttpUtils.doPost("http://localhost:8085/myshiro/api/test2",new HashMap<>(),headsMap);
         System.out.println(msg);
     }
-
 
 }
