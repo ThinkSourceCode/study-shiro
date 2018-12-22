@@ -34,8 +34,8 @@ public class LoginController {
             SqlOperation.saveUserToken(user,token);
             //将生成的token保存到用户数据库中
 
-            AuthenticationUserToken authenticationUserToken = new AuthenticationUserToken(token);
-            SecurityUtils.getSubject().login(authenticationUserToken);
+            AuthenticationToken authenticationToken = new AuthenticationUserToken(token);
+            SecurityUtils.getSubject().login(authenticationToken);
 
             userVo.setCode(200);
             userVo.setMsg("登录成功");

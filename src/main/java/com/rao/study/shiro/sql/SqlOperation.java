@@ -3,6 +3,7 @@ package com.rao.study.shiro.sql;
 import com.rao.study.shiro.domain.Permission;
 import com.rao.study.shiro.domain.Role;
 import com.rao.study.shiro.domain.User;
+import com.rao.study.shiro.domain.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,6 +73,26 @@ public class SqlOperation {
             log.info(e.getMessage());
         }
         return user;
+    }
+
+    public static UserToken getUserTokenByToken(String token){
+        UserToken userToken = null;
+        try {
+            PreparedStatement pstmt = connection.prepareStatement("select id,user_id,token,DATE_FORMAT(expired_date,'%Y-%m-%d %H:%i:%s') expired_date from t_user_token where token = ?");
+            pstmt.setString(1,token);
+
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                userToken = new UserToken();
+                userToken.setId(rs.getInt(1));
+                userToken.setUserId(rs.getInt(2));
+                userToken.setToken(rs.getString(3));
+                userToken.setExpiredDate(LocalDateTime.parse(rs.getString(4), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+        }catch (Exception e){
+            log.info(e.getMessage());
+        }
+        return userToken;
     }
 
     public static void saveUserToken(User user,String token){
