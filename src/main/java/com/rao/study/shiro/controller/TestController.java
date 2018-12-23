@@ -1,9 +1,11 @@
 package com.rao.study.shiro.controller;
 
 import com.rao.study.shiro.annotation.NoNeedAuth;
+import com.rao.study.shiro.domain.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +24,19 @@ public class TestController {
     @RequiresPermissions("user:create")
     @PostMapping("/test2")
     public String test2(){
+        //获取当前登陆的用户
+        Subject subject = SecurityUtils.getSubject();
+
+        //获取实体
+        User user = (User) subject.getPrincipal();
+
+        //判断当前登陆用户的权限
+        if(subject.isAuthenticated()){
+            System.out.println("sdf");
+        }
+
+        //检测用户角色
+        subject.checkRole("superAdmin");
         return "test2";
     }
 

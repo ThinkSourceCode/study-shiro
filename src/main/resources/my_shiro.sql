@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50723
 File Encoding         : 65001
 
-Date: 2018-09-02 21:32:34
+Date: 2018-12-23 23:16:43
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -88,7 +88,7 @@ CREATE TABLE `t_user` (
 -- ----------------------------
 -- Records of t_user
 -- ----------------------------
-INSERT INTO `t_user` VALUES ('1', 'zhang', '123', null, null);
+INSERT INTO `t_user` VALUES ('1', 'rao', '123', null, null);
 INSERT INTO `t_user` VALUES ('2', 'wang', '123', null, null);
 
 -- ----------------------------
@@ -108,3 +108,22 @@ CREATE TABLE `t_user_role` (
 INSERT INTO `t_user_role` VALUES ('1', '1', '1');
 INSERT INTO `t_user_role` VALUES ('2', '1', '2');
 INSERT INTO `t_user_role` VALUES ('3', '2', '1');
+
+-- ----------------------------
+-- Table structure for t_user_token
+-- ----------------------------
+DROP TABLE IF EXISTS `t_user_token`;
+CREATE TABLE `t_user_token` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  `expired_date` datetime DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of t_user_token
+-- ----------------------------
+INSERT INTO `t_user_token` VALUES ('1', '1', '1c2958b29c21ef9afe56218474ead882', '2018-12-24 23:13:16', '2018-12-23 20:39:03', '2018-12-23 23:13:16');
