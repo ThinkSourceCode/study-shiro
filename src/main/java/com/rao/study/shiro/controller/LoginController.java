@@ -1,5 +1,6 @@
 package com.rao.study.shiro.controller;
 
+import com.rao.study.shiro.annotation.NoNeedAuth;
 import com.rao.study.shiro.domain.User;
 import com.rao.study.shiro.dto.UserDto;
 import com.rao.study.shiro.realm.AuthenticationUserToken;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     @PostMapping("/login")
+    @NoNeedAuth
     public UserVo login(@RequestBody UserDto userDto){
         UserVo userVo = new UserVo();
         userVo.setCode(500);

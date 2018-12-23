@@ -1,8 +1,6 @@
 package com.rao.study.shiro.config;
 
-import com.rao.study.shiro.filter.AuthorFilter;
 import com.rao.study.shiro.realm.MyRealm;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -13,10 +11,6 @@ import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import javax.servlet.Filter;
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
@@ -48,17 +42,6 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager){
         ShiroFilterFactoryBean filterFactoryBean = new ShiroFilterFactoryBean();
         filterFactoryBean.setSecurityManager(securityManager);
-
-        //添加过滤器
-        Map<String, Filter> filterMap = new HashMap<>();
-        filterMap.put("authorFilter",new AuthorFilter());
-
-        filterFactoryBean.setFilters(filterMap);
-
-        //添加过滤器对url资源的映射
-        Map<String,String> filterChainDefinitionMap = new HashMap<>();
-        filterChainDefinitionMap.put("/**","authorFilter");//表示authorFilter这个过滤器对所有资源进行拦截(有些静态资源可以直接设置为匿名的nano)
-        filterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
         return filterFactoryBean;
     }
