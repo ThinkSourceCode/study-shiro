@@ -21,6 +21,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,6 +60,15 @@ public class HttpUtils {
                 return false;
             }
         }
+    }
+
+    public static void noAuthorResponse(HttpServletResponse response)throws Exception{
+        response.setContentType("application/json;charset=utf-8");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setStatus(401);
+
+        response.getWriter().print("无权访问");
     }
 
 

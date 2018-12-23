@@ -9,7 +9,6 @@ import com.rao.study.shiro.utils.TokenGenerator;
 import com.rao.study.shiro.vo.UserVo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
